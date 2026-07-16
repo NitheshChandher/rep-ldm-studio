@@ -44,22 +44,7 @@ folder + a CelebA-style attribute CSV (extracts representations in batches,
 caches them under `cache/reps/`, then saves mean-difference vectors):
 
 ```bash
-python tools/compute_attributes.py \
-    --image_dir /path/to/celebahq \
-    --attr_file annotations/list_attr_celebahq.csv \
-    --encoders dinov2 clip diffae \
-    --attributes Blond_Hair Smiling Eyeglasses   # omit to export all columns
-```
-
-If you already have per-image representations (e.g. from rep-ldm's
-`extract_rep.py`), export directly:
-
-```bash
-python tools/export_attributes.py \
-    --rep_path /path/to/rep_dinov2 \
-    --attr_file /path/to/list_attr_celeba.csv \
-    --model_key dinov2 \
-    --attributes Blond_Hair Smiling Eyeglasses
+python tools/compute_attributes.py --image_dir /path/to/celebahq --encoders dinov2 clip diffae
 ```
 
 ## Running
