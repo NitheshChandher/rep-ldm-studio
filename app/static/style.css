@@ -112,6 +112,8 @@ select, input[type="number"] {
 .settings-grid label, .edit-controls label { color: var(--muted); font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem; }
 input[type="range"] { accent-color: var(--accent); width: 100%; }
 .val { color: var(--text); font-weight: 600; }
+.check-label { flex-direction: row !important; align-items: center; gap: 0.5rem !important; }
+.check-label input { accent-color: var(--accent); width: auto; }
 
 /* Buttons */
 .run-btn {

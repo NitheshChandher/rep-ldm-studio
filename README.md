@@ -22,10 +22,10 @@ Requires a CUDA GPU for practical generation speed. The Stable Diffusion v1-4 VA
 ```
 rep-ldm-studio/
 ├── checkpoints/                 # UNet checkpoints (auto-discovered by filename)
-│   ├── dinov2-ldm.pt            # name must contain "dino"
-│   ├── clip-ldm.pt              # name must contain "clip"
-│   ├── diffae-ldm.pt            # name must contain "diffae" (or "semantic")
-│   └── diffae-encoder.pt        # DiffAE semantic encoder — name must contain "encoder"
+│   ├── dinov2-ldm.pth           # name must contain "dino"
+│   ├── clip-ldm.pth             # name must contain "clip"
+│   ├── diffae-ldm.pth           # name must contain "diffae" (or "semantic")
+│   └── diffae-encoder.pth       # DiffAE semantic encoder — name must contain "encoder"
 ├── attributes/                  # attribute direction vectors, one of:
 │   ├── dinov2.npz               #   a) {model_key}.npz — keys = attribute names
 │   ├── clip.npz
@@ -37,7 +37,22 @@ rep-ldm-studio/
 
 Override locations with environment variables: `REPLDM_CHECKPOINT_DIR`, `REPLDM_ATTRIBUTE_DIR`, `REPLDM_OUTPUT_DIR`.
 
-To compute `.npz` attribute files from per-image representations + a CelebA-style CSV:
+### Computing attribute vectors
+
+To compute the `.npz` attribute files for every encoder directly from an image
+folder + a CelebA-style attribute CSV (extracts representations in batches,
+caches them under `cache/reps/`, then saves mean-difference vectors):
+
+```bash
+python tools/compute_attributes.py \
+    --image_dir /path/to/celebahq \
+    --attr_file annotations/list_attr_celebahq.csv \
+    --encoders dinov2 clip diffae \
+    --attributes Blond_Hair Smiling Eyeglasses   # omit to export all columns
+```
+
+If you already have per-image representations (e.g. from rep-ldm's
+`extract_rep.py`), export directly:
 
 ```bash
 python tools/export_attributes.py \
@@ -63,6 +78,7 @@ Open http://localhost:8000
 - `app/pipeline.py` — DDPM-inversion based interpolation & attribute editing
 - `app/models.py` — lazy loading/caching of encoders, UNets, and the SD VAE
 - `app/inversion_utils.py` — edit-friendly DDPM inversion (forward + reverse)
+- `app/face_align.py` — FFHQ-style dlib face alignment for uploads (toggle in the UI)
 - `app/jobs.py` — single-GPU background job queue with progress reporting
 - `app/static/` — vanilla HTML/JS/CSS frontend
 - `diffae/` — semantic encoder definition (needed to unpickle DiffAE encoder checkpoints)

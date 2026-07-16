@@ -80,6 +80,7 @@ def interpolate(model: str = Form(...),
                 cfg_src: float = Form(1.0),
                 cfg_tar: float = Form(1.0),
                 num_frames: int = Form(9),
+                align: bool = Form(True),
                 image1: UploadFile = File(...),
                 image2: UploadFile = File(...)):
     if sampling not in ("linear", "spherical", "linear-spherical"):
@@ -94,13 +95,19 @@ def interpolate(model: str = Form(...),
 
     def work(job):
         from app import pipeline
+        in1, in2 = img1, img2
+        if align:
+            from app.face_align import try_align
+            job.set_progress(0.01, "Aligning faces")
+            in1, _ = try_align(in1)
+            in2, _ = try_align(in2)
         images = pipeline.run_interpolation(
-            info, img1, img2, sampling=sampling,
+            info, in1, in2, sampling=sampling,
             num_diffusion_steps=num_diffusion_steps, skip=skip,
             cfg_src=cfg_src, cfg_tar=cfg_tar, num_frames=num_frames,
             progress=job.set_progress)
         labels = [f"alpha_{i / (len(images) - 1):.2f}" for i in range(len(images))]
-        _save_images(job, images, labels, inputs=[("1", img1), ("2", img2)])
+        _save_images(job, images, labels, inputs=[("1", in1), ("2", in2)])
 
     job = job_manager.submit("interpolate", work)
     return {"job_id": job.id}
@@ -114,6 +121,7 @@ def edit(model: str = Form(...),
          skip: int = Form(36),
          cfg_src: float = Form(1.0),
          cfg_tar: float = Form(1.0),
+         align: bool = Form(True),
          image: UploadFile = File(...)):
     if not (0 < skip < num_diffusion_steps):
         raise HTTPException(400, "skip must be between 1 and num_diffusion_steps-1")
@@ -127,11 +135,16 @@ def edit(model: str = Form(...),
 
     def work(job):
         from app import pipeline
+        inp = img
+        if align:
+            from app.face_align import try_align
+            job.set_progress(0.01, "Aligning face")
+            inp, _ = try_align(inp)
         images = pipeline.run_attribute_edit(
-            info, img, attribute, lamda=lamda,
+            info, inp, attribute, lamda=lamda,
             num_diffusion_steps=num_diffusion_steps, skip=skip,
             cfg_src=cfg_src, cfg_tar=cfg_tar, progress=job.set_progress)
-        _save_images(job, images, [f"{attribute}_lambda_{lamda:g}"], inputs=[("1", img)])
+        _save_images(job, images, [f"{attribute}_lambda_{lamda:g}"], inputs=[("1", inp)])
 
     job = job_manager.submit("edit", work)
     return {"job_id": job.id}

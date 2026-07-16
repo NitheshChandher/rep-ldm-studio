@@ -111,6 +111,7 @@ $("run-interp").addEventListener("click", async () => {
   fd.append("cfg_src", $("interp-cfg-src").value);
   fd.append("cfg_tar", $("interp-cfg-tar").value);
   fd.append("num_frames", $("interp-frames").value);
+  fd.append("align", $("interp-align").checked);
   fd.append("image1", files.interp1);
   fd.append("image2", files.interp2);
   await startJob("/api/interpolate", fd);
@@ -125,6 +126,7 @@ $("run-edit").addEventListener("click", async () => {
   fd.append("skip", $("edit-skip").value);
   fd.append("cfg_src", $("edit-cfg-src").value);
   fd.append("cfg_tar", $("edit-cfg-tar").value);
+  fd.append("align", $("edit-align").checked);
   fd.append("image", files.edit);
   await startJob("/api/edit", fd);
 });

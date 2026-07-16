@@ -12,4 +12,7 @@ attributes/*
 # Generated images
 outputs/
 
+# Downloaded predictor weights & cached representations
+cache/
+
 .DS_Store
