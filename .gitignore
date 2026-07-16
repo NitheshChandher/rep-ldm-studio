@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Model weights & data (too large for git)
+checkpoints/*
+!checkpoints/.gitkeep
+attributes/*
+!attributes/.gitkeep
+
+# Generated images
+outputs/
+
+.DS_Store

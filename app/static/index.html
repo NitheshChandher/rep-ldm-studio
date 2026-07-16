@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rep-LDM Studio</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header>
+  <h1>Rep-LDM Studio</h1>
+  <p class="subtitle">Representation-Conditioned Diffusion — Interpolation &amp; Feature Editing</p>
+</header>
+
+<main>
+  <section class="card" id="model-card">
+    <label class="field-label" for="model-select">Diffusion model</label>
+    <select id="model-select"></select>
+    <span id="model-status" class="hint"></span>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="interpolate">Interpolation</button>
+    <button class="tab" data-tab="edit">Feature Editing</button>
+  </nav>
+
+  <!-- ========== Interpolation ========== -->
+  <section class="panel active" id="panel-interpolate">
+    <div class="card">
+      <div class="upload-row">
+        <div class="dropzone" id="dz-interp-1">
+          <input type="file" accept="image/*" id="file-interp-1" hidden />
+          <div class="dz-placeholder">Click to upload<br /><strong>Image A</strong></div>
+          <img class="dz-preview" alt="" />
+        </div>
+        <div class="arrow">&#10230;</div>
+        <div class="dropzone" id="dz-interp-2">
+          <input type="file" accept="image/*" id="file-interp-2" hidden />
+          <div class="dz-placeholder">Click to upload<br /><strong>Image B</strong></div>
+          <img class="dz-preview" alt="" />
+        </div>
+      </div>
+
+      <details class="settings">
+        <summary>Advanced settings</summary>
+        <div class="settings-grid">
+          <label>Sampling
+            <select id="interp-sampling">
+              <option value="linear-spherical" selected>linear-spherical (rep + noise)</option>
+              <option value="linear">linear (rep only)</option>
+              <option value="spherical">spherical (noise only)</option>
+            </select>
+          </label>
+          <label>Frames <span class="val" id="interp-frames-val">9</span>
+            <input type="range" id="interp-frames" min="3" max="15" step="2" value="9" />
+          </label>
+          <label>Diffusion steps
+            <input type="number" id="interp-steps" min="20" max="200" value="100" />
+          </label>
+          <label>Skip
+            <input type="number" id="interp-skip" min="1" max="199" value="36" />
+          </label>
+          <label>CFG source
+            <input type="number" id="interp-cfg-src" step="0.1" value="1.0" />
+          </label>
+          <label>CFG target
+            <input type="number" id="interp-cfg-tar" step="0.1" value="1.0" />
+          </label>
+        </div>
+      </details>
+
+      <button class="run-btn" id="run-interp" disabled>Generate interpolation</button>
+    </div>
+  </section>
+
+  <!-- ========== Feature editing ========== -->
+  <section class="panel" id="panel-edit">
+    <div class="card">
+      <div class="upload-row">
+        <div class="dropzone" id="dz-edit">
+          <input type="file" accept="image/*" id="file-edit" hidden />
+          <div class="dz-placeholder">Click to upload<br /><strong>Image</strong></div>
+          <img class="dz-preview" alt="" />
+        </div>
+        <div class="edit-controls">
+          <label class="field-label" for="attr-select">Feature / attribute</label>
+          <select id="attr-select"></select>
+          <label class="field-label">Strength (&lambda;) <span class="val" id="lamda-val">1.0</span></label>
+          <input type="range" id="lamda" min="-3" max="3" step="0.1" value="1" />
+        </div>
+      </div>
+
+      <details class="settings">
+        <summary>Advanced settings</summary>
+        <div class="settings-grid">
+          <label>Diffusion steps
+            <input type="number" id="edit-steps" min="20" max="200" value="100" />
+          </label>
+          <label>Skip
+            <input type="number" id="edit-skip" min="1" max="199" value="36" />
+          </label>
+          <label>CFG source
+            <input type="number" id="edit-cfg-src" step="0.1" value="1.0" />
+          </label>
+          <label>CFG target
+            <input type="number" id="edit-cfg-tar" step="0.1" value="1.0" />
+          </label>
+        </div>
+      </details>
+
+      <button class="run-btn" id="run-edit" disabled>Apply feature</button>
+    </div>
+  </section>
+
+  <!-- ========== Progress / results ========== -->
+  <section class="card hidden" id="progress-card">
+    <div class="progress-header">
+      <span id="progress-message">Working…</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </section>
+
+  <section class="card hidden" id="results-card">
+    <div class="results-header">
+      <h2>Results</h2>
+      <button class="ghost-btn" id="download-all">Download all</button>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section class="card error hidden" id="error-card"></section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

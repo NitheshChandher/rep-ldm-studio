@@ -1,0 +1,20 @@
+# Core
+torch>=2.0
+torchvision
+diffusers==0.18.2
+transformers>=4.25
+accelerate
+timm
+
+# Data
+numpy
+pandas
+pillow
+
+# Web
+fastapi
+uvicorn
+python-multipart
+
+# Misc
+tqdm
