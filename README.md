@@ -7,7 +7,7 @@ Web interface for **representation-conditioned diffusion models** (DINOv2-LDM, C
 
 Representations for uploaded images are extracted on the fly (DINOv2 / CLIP / DiffAE semantic encoder). All generated images can be downloaded from the UI.
 
-Companion app for the [rep-ldm](https://github.com/nithesh/rep-ldm) research codebase (*Evaluating Representation Conditioned Diffusion Models*).
+Companion app for the [rep-ldm](https://github.com/NitheshChandher/rep-ldm.git) research codebase (*Evaluating Representation Conditioned Diffusion Models*).
 
 ## Setup
 
