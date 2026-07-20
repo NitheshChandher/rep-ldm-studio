@@ -15,7 +15,7 @@ Companion app for the [rep-ldm](https://github.com/NitheshChandher/rep-ldm.git) 
 pip install -r requirements.txt
 ```
 
-Requires a CUDA GPU for practical generation speed. The Stable Diffusion v1-4 VAE/scheduler and the DINOv2/CLIP encoders are downloaded automatically on first use.
+Requires a CUDA GPU for practical generation speed. The Stable Diffusion v1-4 VAE/scheduler and the DINOv2/CLIP encoders are downloaded automatically on first use. Download the models from [checkpoints](https://liuonline-my.sharepoint.com/:f:/g/personal/nitch36_liu_se/IgCrfg8hEeenQJwPRADi-ZXHAU0T-zothmxbt1TCGpvMlzg?e=cTzS1c) and place them in a folder named `checkpoints`.
 
 ## Expected folder layout
 
