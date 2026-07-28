@@ -138,6 +138,49 @@ def run_interpolation(model_info, img1, img2, *, sampling="linear-spherical",
     return images
 
 
+def run_doppelganger(model_info, img, *, num_samples=4, seeds=None,
+                     num_diffusion_steps=100, progress=lambda p, m: None):
+    """Generate variations that share the reference image's representation but
+    use different random seeds for the initial noise ("doppelgängers")."""
+    model_key = model_info["key"]
+
+    if seeds is None:
+        seeds = [42, 7, 17, 25, 96, 3, 61, 88, 13, 70][:num_samples]
+
+    progress(0.02, "Extracting representation")
+    z0 = models.extract_representation(model_key, model_info, img).to(device).view(1, 1, -1)
+
+    progress(0.08, "Loading model")
+    unet = models.get_unet(model_info["checkpoint"])
+    latent_size = unet.sample_size
+
+    scheduler = DDIMScheduler.from_config(config.SD_MODEL_ID, subfolder="scheduler")
+    scheduler.set_timesteps(num_diffusion_steps)
+    vae = models.get_vae()
+
+    # One initial noise latent per seed, denoised as a single batch
+    latents = torch.cat([
+        torch.randn((1, 4, latent_size, latent_size),
+                    generator=torch.Generator().manual_seed(int(s)))
+        for s in seeds
+    ], dim=0).to(device)
+    z_batch = z0.expand(len(seeds), -1, -1)
+
+    progress(0.1, "Generating doppelgängers")
+    with _autocast_ctx(), inference_mode():
+        timesteps = scheduler.timesteps
+        for i, t in enumerate(timesteps):
+            noise_pred = unet(latents, t, z_batch)["sample"]
+            latents = scheduler.step(noise_pred, t, latents)["prev_sample"]
+            progress(0.1 + 0.8 * (i + 1) / len(timesteps), "Generating doppelgängers")
+
+    torch.cuda.empty_cache()
+    progress(0.9, "Decoding images")
+    images = _decode_latents(vae, latents.float())
+    progress(0.98, "Saving results")
+    return images, list(seeds)
+
+
 def run_attribute_edit(model_info, img, attribute_name, *, lamda=1.0,
                        num_diffusion_steps=100, skip=36, cfg_src=1.0, cfg_tar=1.0,
                        eta=1.0, progress=lambda p, m: None):

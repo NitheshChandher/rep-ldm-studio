@@ -1,9 +1,10 @@
 # Rep-LDM Studio
 
-Web interface for **representation-conditioned diffusion models** (DINOv2-LDM, CLIP-LDM, DiffAE-LDM) with two features:
+Web interface for **representation-conditioned diffusion models** (DINOv2-LDM, CLIP-LDM, DiffAE-LDM) with three features:
 
 1. **Interpolation** — upload two images and generate a sequence of images interpolated in representation space (with optional spherical interpolation of noise maps).
 2. **Feature Editing** — upload an image, pick an attribute (e.g. *Blond_Hair*, *Smiling*) and a strength λ, and generate the edited image.
+3. **Generate your Doppelgänger** — upload a reference image and generate multiple variations that keep its representation but start from different random seeds.
 
 Representations for uploaded images are extracted on the fly (DINOv2 / CLIP / DiffAE semantic encoder). All generated images can be downloaded from the UI.
 
@@ -59,8 +60,8 @@ Open http://localhost:8000
 
 ## Architecture
 
-- `app/main.py` — FastAPI endpoints (`/api/models`, `/api/interpolate`, `/api/edit`, `/api/job/{id}`, `/api/download/{id}/{file}`)
-- `app/pipeline.py` — DDPM-inversion based interpolation & attribute editing
+- `app/main.py` — FastAPI endpoints (`/api/models`, `/api/interpolate`, `/api/edit`, `/api/doppelganger`, `/api/job/{id}`, `/api/download/{id}/{file}`)
+- `app/pipeline.py` — DDPM-inversion based interpolation & attribute editing, seed-varied doppelgänger sampling
 - `app/models.py` — lazy loading/caching of encoders, UNets, and the SD VAE
 - `app/inversion_utils.py` — edit-friendly DDPM inversion (forward + reverse)
 - `app/face_align.py` — FFHQ-style dlib face alignment for uploads (toggle in the UI)

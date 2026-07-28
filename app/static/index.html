@@ -22,6 +22,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="interpolate">Interpolation</button>
     <button class="tab" data-tab="edit">Feature Editing</button>
+    <button class="tab" data-tab="dopp">Doppelg&auml;nger</button>
   </nav>
 
   <!-- ========== Interpolation ========== -->
@@ -111,6 +112,40 @@
       </details>
 
       <button class="run-btn" id="run-edit" disabled>Apply feature</button>
+    </div>
+  </section>
+
+  <!-- ========== Doppelgänger ========== -->
+  <section class="panel" id="panel-dopp">
+    <div class="card">
+      <div class="upload-row">
+        <div class="dropzone" id="dz-dopp">
+          <input type="file" accept="image/*" id="file-dopp" hidden />
+          <div class="dz-placeholder">Click to upload<br /><strong>Reference image</strong></div>
+          <img class="dz-preview" alt="" />
+        </div>
+        <div class="edit-controls">
+          <p class="hint" style="margin-left:0">Generates new images that keep the reference image's
+            representation but start from different random noise — your doppelg&auml;ngers.</p>
+          <label class="field-label">Number of samples <span class="val" id="dopp-samples-val">4</span></label>
+          <input type="range" id="dopp-samples" min="1" max="10" step="1" value="4" />
+        </div>
+      </div>
+
+      <details class="settings">
+        <summary>Advanced settings</summary>
+        <div class="settings-grid">
+          <label>Diffusion steps
+            <input type="number" id="dopp-steps" min="20" max="200" value="100" />
+          </label>
+          <label>Seeds (optional, space-separated)
+            <input type="text" id="dopp-seeds" placeholder="e.g. 42 7 17" />
+          </label>
+          <label class="check-label"><input type="checkbox" id="dopp-align" checked /> Align face (FFHQ)</label>
+        </div>
+      </details>
+
+      <button class="run-btn" id="run-dopp" disabled>Generate doppelg&auml;ngers</button>
     </div>
   </section>
 

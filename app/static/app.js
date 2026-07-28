@@ -87,12 +87,14 @@ function setupDropzone(dzId, inputId, key) {
 setupDropzone("dz-interp-1", "file-interp-1", "interp1");
 setupDropzone("dz-interp-2", "file-interp-2", "interp2");
 setupDropzone("dz-edit", "file-edit", "edit");
+setupDropzone("dz-dopp", "file-dopp", "dopp");
 
 function updateRunButtons() {
   const m = currentModel();
   const modelOk = m && m.available;
   $("run-interp").disabled = !(modelOk && files.interp1 && files.interp2);
   $("run-edit").disabled = !(modelOk && files.edit && m.attributes && m.attributes.length);
+  $("run-dopp").disabled = !(modelOk && files.dopp);
 }
 
 $("model-select").addEventListener("change", () => { updateAttributes(); updateRunButtons(); });
@@ -100,6 +102,7 @@ $("model-select").addEventListener("change", () => { updateAttributes(); updateR
 /* ---------- Sliders ---------- */
 $("interp-frames").addEventListener("input", (e) => { $("interp-frames-val").textContent = e.target.value; });
 $("lamda").addEventListener("input", (e) => { $("lamda-val").textContent = Number(e.target.value).toFixed(1); });
+$("dopp-samples").addEventListener("input", (e) => { $("dopp-samples-val").textContent = e.target.value; });
 
 /* ---------- Run ---------- */
 $("run-interp").addEventListener("click", async () => {
@@ -129,6 +132,17 @@ $("run-edit").addEventListener("click", async () => {
   fd.append("align", $("edit-align").checked);
   fd.append("image", files.edit);
   await startJob("/api/edit", fd);
+});
+
+$("run-dopp").addEventListener("click", async () => {
+  const fd = new FormData();
+  fd.append("model", $("model-select").value);
+  fd.append("num_samples", $("dopp-samples").value);
+  fd.append("num_diffusion_steps", $("dopp-steps").value);
+  fd.append("seeds", $("dopp-seeds").value.trim());
+  fd.append("align", $("dopp-align").checked);
+  fd.append("image", files.dopp);
+  await startJob("/api/doppelganger", fd);
 });
 
 async function startJob(url, formData) {
@@ -182,6 +196,7 @@ function poll() {
 function setRunning(running) {
   $("run-interp").disabled = running;
   $("run-edit").disabled = running;
+  $("run-dopp").disabled = running;
   if (!running) updateRunButtons();
 }
 

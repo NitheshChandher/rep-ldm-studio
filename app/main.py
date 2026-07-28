@@ -150,6 +150,44 @@ def edit(model: str = Form(...),
     return {"job_id": job.id}
 
 
+@app.post("/api/doppelganger")
+def doppelganger(model: str = Form(...),
+                 num_samples: int = Form(4),
+                 num_diffusion_steps: int = Form(100),
+                 seeds: str = Form(""),
+                 align: bool = Form(True),
+                 image: UploadFile = File(...)):
+    if not (1 <= num_samples <= 10):
+        raise HTTPException(400, "num_samples must be between 1 and 10")
+    seed_list = None
+    if seeds.strip():
+        try:
+            seed_list = [int(s) for s in seeds.replace(",", " ").split()]
+        except ValueError:
+            raise HTTPException(400, "seeds must be a list of integers")
+        if not (1 <= len(seed_list) <= 10):
+            raise HTTPException(400, "provide between 1 and 10 seeds")
+
+    info = _get_model_or_400(model)
+    img = _read_upload(image)
+
+    def work(job):
+        from app import pipeline
+        inp = img
+        if align:
+            from app.face_align import try_align
+            job.set_progress(0.01, "Aligning face")
+            inp, _ = try_align(inp)
+        images, used_seeds = pipeline.run_doppelganger(
+            info, inp, num_samples=num_samples, seeds=seed_list,
+            num_diffusion_steps=num_diffusion_steps, progress=job.set_progress)
+        labels = [f"seed_{s}" for s in used_seeds]
+        _save_images(job, images, labels, inputs=[("1", inp)])
+
+    job = job_manager.submit("doppelganger", work)
+    return {"job_id": job.id}
+
+
 @app.get("/api/job/{job_id}")
 def job_status(job_id: str):
     job = job_manager.get(job_id)

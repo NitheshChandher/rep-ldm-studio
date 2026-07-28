@@ -47,7 +47,7 @@ main { max-width: 980px; margin: 0 auto; padding: 0 1rem 4rem; }
 
 .field-label { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 0.4rem; }
 
-select, input[type="number"] {
+select, input[type="number"], input[type="text"] {
   background: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
