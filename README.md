@@ -12,8 +12,39 @@ Companion app for the [rep-ldm](https://github.com/NitheshChandher/rep-ldm.git) 
 
 ## Setup
 
+### Option 1 — Conda (quick setup)
+
+```bash
+conda env create -f environment.yml
+conda activate rep-ldm-studio
+```
+
+### Option 2 — pip
+
 ```bash
 pip install -r requirements.txt
+```
+
+> `dlib` is compiled from source when installed via pip and requires `cmake` and a C++ compiler (`apt install cmake build-essential`). The conda environment ships a prebuilt dlib.
+
+### Option 3 — Docker
+
+Requires the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) for GPU access.
+
+```bash
+docker compose up --build
+```
+
+The compose file mounts `./checkpoints`, `./attributes`, `./outputs`, and `./cache` (downloaded encoder weights, dlib predictor) from the host, publishes port 8000, and starts the app automatically. Or without compose:
+
+```bash
+docker build -t rep-ldm-studio .
+docker run --gpus all -p 8000:8000 \
+    -v ./checkpoints:/workspace/checkpoints \
+    -v ./attributes:/workspace/attributes \
+    -v ./outputs:/workspace/outputs \
+    -v ./cache:/workspace/cache \
+    rep-ldm-studio
 ```
 
 Requires a CUDA GPU for practical generation speed. The Stable Diffusion v1-4 VAE/scheduler and the DINOv2/CLIP encoders are downloaded automatically on first use. Download the models from [checkpoints](https://liuonline-my.sharepoint.com/:f:/g/personal/nitch36_liu_se/IgCrfg8hEeenQJwPRADi-ZXHAU0T-zothmxbt1TCGpvMlzg?e=cTzS1c) and place them in a folder named `checkpoints`.
@@ -30,15 +61,29 @@ rep-ldm-studio/
 ├── attributes/                  # attribute direction vectors, one of:
 │   ├── dinov2.npz               #   a) {model_key}.npz — keys = attribute names
 │   ├── clip.npz
-│   ├── diffae.npz
-│   ├── dinov2/Blond_Hair.npy    #   b) {model_key}/<Attribute>.npy per attribute
-│   └── attribute.py             #   c) module with ATTRIBUTES = {model_key: {name: vector}}
-└── app/
+│   └── diffae.npz
+├──  app/
+├── annotations/
+├── diffae/
+└── tools/
 ```
 
 Override locations with environment variables: `REPLDM_CHECKPOINT_DIR`, `REPLDM_ATTRIBUTE_DIR`, `REPLDM_OUTPUT_DIR`.
 
-### Computing attribute vectors
+## Running
+
+```bash
+conda activate rep-ldm-studio    # or your own environment
+./run.sh                         # respects $REPLDM_PYTHON and $PORT
+# or
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+# or
+docker compose up
+```
+
+Open http://localhost:8000
+
+### Computing attribute vectors 
 
 To compute the `.npz` attribute files for every encoder directly from an image
 folder + a CelebA-style attribute CSV (extracts representations in batches,
@@ -47,16 +92,6 @@ caches them under `cache/reps/`, then saves mean-difference vectors):
 ```bash
 python tools/compute_attributes.py --image_dir /path/to/celebahq --encoders dinov2 clip diffae
 ```
-
-## Running
-
-```bash
-./run.sh                         # uses $REPLDM_PYTHON or ~/anaconda3/envs/di/bin/python
-# or
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-Open http://localhost:8000
 
 ## Architecture
 

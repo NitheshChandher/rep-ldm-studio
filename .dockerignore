@@ -1,0 +1,12 @@
+.git
+__pycache__
+**/__pycache__
+*.py[cod]
+outputs
+cache
+checkpoints/*
+!checkpoints/.gitkeep
+attributes/*
+!attributes/.gitkeep
+*.md
+.gitignore

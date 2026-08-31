@@ -1,0 +1,19 @@
+services:
+  rep-ldm-studio:
+    build: .
+    image: rep-ldm-studio
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./checkpoints:/workspace/checkpoints
+      - ./attributes:/workspace/attributes
+      - ./outputs:/workspace/outputs
+      - ./cache:/workspace/cache          # torch hub / HF weights + dlib predictor
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
