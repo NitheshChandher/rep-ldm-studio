@@ -1,5 +1,7 @@
 # Rep-LDM Studio
 
+![Project Pipeline](/assets/interface-1.png)
+
 Web interface for **representation-conditioned diffusion models** (DINOv2-LDM, CLIP-LDM, DiffAE-LDM) with three features:
 
 1. **Interpolation** — upload two images and generate a sequence of images interpolated in representation space (with optional spherical interpolation of noise maps).
@@ -9,8 +11,6 @@ Web interface for **representation-conditioned diffusion models** (DINOv2-LDM, C
 Representations for uploaded images are extracted on the fly (DINOv2 / CLIP / DiffAE semantic encoder). All generated images can be downloaded from the UI.
 
 Companion app for the [rep-ldm](https://github.com/NitheshChandher/rep-ldm.git) research codebase (*Evaluating Representation Conditioned Diffusion Models*).
-
-![Project Pipeline](/assets/interface-1.png)
 
 ## Setup
 
