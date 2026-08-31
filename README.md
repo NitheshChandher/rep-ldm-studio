@@ -10,6 +10,8 @@ Representations for uploaded images are extracted on the fly (DINOv2 / CLIP / Di
 
 Companion app for the [rep-ldm](https://github.com/NitheshChandher/rep-ldm.git) research codebase (*Evaluating Representation Conditioned Diffusion Models*).
 
+![Project Pipeline](/assets/interface-1.png)
+
 ## Setup
 
 ### Option 1 — Conda (quick setup)
@@ -63,6 +65,7 @@ rep-ldm-studio/
 │   ├── clip.npz
 │   └── diffae.npz
 ├──  app/
+├──  assets/
 ├── annotations/
 ├── diffae/
 └── tools/
